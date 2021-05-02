@@ -38,8 +38,10 @@ module.exports = {
     const limit = parseInt(req.query.limit);
 
     if (!page || !limit) {
-      return res.status(400).json({
-        message: "incorrect params"
+      const posts = await Post.findAll();
+      return res.status(200).json({
+        totalCount: posts.length,
+        posts
       });
     }
 
