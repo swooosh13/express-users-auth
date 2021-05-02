@@ -1,20 +1,18 @@
 const Router = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
 const User = require('../model/userModel');
-const opts = require('../config/index');
 
 const router = new Router;
 
 router.post('/register', async (req, res) => {
-  let {email, password} = req.body;
+  let { email, password } = req.body;
 
   let hashedPassword = await bcrypt.hash(password, 7);
 
   try {
     let candidate = await User.create({
-      email, 
+      email,
       password: hashedPassword,
       username: "user:" + email,
       role: "USER"
@@ -24,7 +22,7 @@ router.post('/register', async (req, res) => {
     res.status(200).json({
       candidate, message: "ok"
     });
-  } catch(e) {
+  } catch (e) {
     res.status(500).json({
       message: e.parent.detail
     });
@@ -32,10 +30,10 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-  const {email, password} = req.body;
+  const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({where: {email: email}});
+    const user = await User.findOne({ where: { email: email } });
     if (!user) {
       return res.status(400).json({
         message: "user not found"
@@ -50,12 +48,12 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    const payload = {email: user.email};
-    let token = await jwt.sign(payload, opts.secretOrKey);
+    const payload = { email: user.email };
+    let token = await jwt.sign(payload, process.env.API_KEY);
     res.status(200).json({
       token
     });
-  } catch(e) {
+  } catch (e) {
     res.status(500).json({
       message: e
     });

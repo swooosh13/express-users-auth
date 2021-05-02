@@ -1,13 +1,15 @@
+require('dotenv').config();
+
 const express = require('express');
 const passport = require('passport');
+
 const app = express();
 const userRouter = require('./user/index').userRouter;
 const postRouter = require('./post/index').postRouter;
-const authRouter = require('./auth/index');
+const authRouter = require('./auth/authRouter');
 
 const { db } = require('./db/index');
 
-require('dotenv').config();
 
 const PORT = process.env.PORT || 5000;
 
