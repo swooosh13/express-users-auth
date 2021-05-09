@@ -6,8 +6,34 @@ module.exports = {
       message: "ok"
     })
   },
+  async getUserByEmail(req, res) {
+    const email = req.query.email;
+    console.log(email);
+    try {
+      const user = await User.findOne({
+        where: {
+          email: email
+        }
+      });
+
+      if (user == null) {
+        return res.status(200).json({
+          message: "user not found", user, email
+        });
+      }
+
+      res.status(200).json({
+        user
+      });
+    } catch (e) {
+      res.status(400).json({
+        message: "cannot get user by email", email
+      })
+    }
+  },
   async getUser(req, res) {
     const { id } = req.params;
+
     try {
       const user = await User.findOne({
         where: {
@@ -25,11 +51,13 @@ module.exports = {
       });
     } catch (e) {
       res.status(400).json({
-        message: "cannot get user"
+        message: "cannot get user by id"
       })
     }
   },
+  
   async getUsers(req, res) {
+
     try {
       const users = await User.findAll();
 
@@ -41,8 +69,13 @@ module.exports = {
 
       let totalCount = await User.count();
 
+      usersResponse = users.map(user => {
+        user.password = null;
+        return user;
+      });
+
       return res.status(200).json({
-        totalCount, users
+        totalCount, users: usersResponse
       });
     } catch (e) {
       res.status(400).json({
